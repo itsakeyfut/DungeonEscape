@@ -29,6 +29,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* RootComp;
+	UPROPERTY(VisibleAnywhere)
 	UTriggerComponent* TriggerComp;
 
 	UPROPERTY(VisibleAnywhere)

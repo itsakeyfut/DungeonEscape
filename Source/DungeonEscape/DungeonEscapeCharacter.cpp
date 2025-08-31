@@ -79,7 +79,26 @@ void ADungeonEscapeCharacter::Interact()
 	DrawDebugSphere(GetWorld(), Start, InteractionSphereRadius, 20, FColor::Green, false, 5.0f);
 	DrawDebugSphere(GetWorld(), End, InteractionSphereRadius, 20, FColor::Blue, false, 5.0f);
 
-	//GetWorld()->SweepSingleByChannel();
+	FHitResult HitResult;
+	bool HasHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		Start, End,
+		FQuat::Identity,
+		ECC_GameTraceChannel2,
+		InteractionSphere
+	);
+
+	if (HasHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+
+
+		UE_LOG(LogTemp, Display, TEXT("Shape trace hit actor %s"), *HitActor->GetActorNameOrLabel());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("Not actor hit!"));
+	}
 }
 
 

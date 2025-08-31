@@ -9,6 +9,8 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DungeonEscape.h"
+#include "CollectableItem.h"
+#include "Lock.h"
 
 ADungeonEscapeCharacter::ADungeonEscapeCharacter()
 {
@@ -93,7 +95,37 @@ void ADungeonEscapeCharacter::Interact()
 		AActor* HitActor = HitResult.GetActor();
 
 
-		UE_LOG(LogTemp, Display, TEXT("Shape trace hit actor %s"), *HitActor->GetActorNameOrLabel());
+		if (HitActor->ActorHasTag("CollectableItem"))
+		{
+			ACollectableItem* CollectableItem = Cast<ACollectableItem>(HitActor);
+			if (CollectableItem)
+			{
+				UE_LOG(LogTemp, Display, TEXT("Collectable Item with name %s!"), *CollectableItem->ItemName);
+				ItemList.Add(CollectableItem->ItemName);
+
+				CollectableItem->Destroy();
+			}
+		}
+		else if (HitActor->ActorHasTag("Lock"))
+		{
+			ALock* LockActor = Cast<ALock>(HitActor);
+			if (LockActor)
+			{
+				if (!LockActor->GetIsKeyPlaced())
+				{
+					int32 ItemsRemoved = ItemList.RemoveSingle(LockActor->KeyItemName);
+
+					if (ItemsRemoved)
+					{
+						LockActor->SetIsKeyPlaced(true);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Display, TEXT("Key item not in inventory"));
+					}
+				}
+			}
+		}
 	}
 	else
 	{
